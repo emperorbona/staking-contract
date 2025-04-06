@@ -1,0 +1,6 @@
+StakeTest:testAddsStakerToArrayOfStakers() (gas: 154953)
+StakeTest:testFundFailsWithoutEnoughEth() (gas: 29420)
+StakeTest:testMinimumStakeTimeIsFive() (gas: 8848)
+StakeTest:testMinimumUSDIsOne() (gas: 8804)
+StakeTest:testPriceFeedVersionIsAccurate() (gas: 14338)
+StakeTest:testStakeFundsUpdatesFundedDataStructure() (gas: 151881)
