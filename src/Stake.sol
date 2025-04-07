@@ -7,6 +7,9 @@ contract Stake {
     using PriceConverter for uint256;
 
     AggregatorV3Interface public s_priceFeed;
+    error Not__Enough__Stake();
+    error YouHaveNoStake();
+    error StakingTimeNotYetPassed();
 
     constructor(address priceFeed){
         s_priceFeed =AggregatorV3Interface(priceFeed); 
@@ -23,7 +26,10 @@ contract Stake {
     uint256 public immutable MINIMUM_USD = 1e18;
 
     function stakeFunds() public payable{
-        require(msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD, "You must stake above $1 worth of ETH");
+        // require(msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD, "You must stake above $1 worth of ETH");
+        if(msg.value.getConversionRate(s_priceFeed) < MINIMUM_USD){
+            revert Not__Enough__Stake();
+        } 
         s_addressToAmountStaked[msg.sender] += msg.value;
         StakeData memory newStakeData = StakeData({
             amountStaked: msg.value,
@@ -38,15 +44,21 @@ contract Stake {
     }
     
     function withdraw() public {
-        require(s_addressToAmountStaked[msg.sender] > 0, "You have no stake");
+        // require(s_addressToAmountStaked[msg.sender] > 0, "You have no stake");
+        if (s_addressToAmountStaked[msg.sender] < 0) {
+            revert YouHaveNoStake(); 
+        }
         uint256 stakersLength = s_stakers.length;
         for (uint256 i = 0; i < stakersLength; i++){
             if (s_stakers[i].stakerAddress == msg.sender) {
                 StakeData memory userStake = s_stakers[i];
 
-                require(block.timestamp >= userStake.stakeTime + MINIMUM_STAKE_TIME,
-                "Staking time not yet passed"
-                );
+                // require(block.timestamp >= userStake.stakeTime + MINIMUM_STAKE_TIME,
+                // "Staking time not yet passed"
+                // );
+                if (block.timestamp < userStake.stakeTime + MINIMUM_STAKE_TIME) {
+                   revert StakingTimeNotYetPassed(); 
+                }
 
                 uint256 totalAmount = userStake.amountStaked;
 
