@@ -55,9 +55,9 @@ contract StakeTest is Test{
         assertEq(stakers.stakeTime, block.timestamp);
 
      }
-      function testOnlyOwnerCanWithdraw() public funded{
+      function testOnlyStakerCanWithdraw() public funded{
 
-        vm.prank(NOTUSER);
+        vm.prank(USER);
         vm.expectRevert();
         stake.withdraw();
      }
