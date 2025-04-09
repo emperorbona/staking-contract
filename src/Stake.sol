@@ -10,6 +10,7 @@ contract Stake {
     error Not__Enough__Stake();
     error YouHaveNoStake();
     error StakingTimeNotYetPassed();
+    error callFailed();
 
     constructor(address priceFeed){
         s_priceFeed =AggregatorV3Interface(priceFeed); 
@@ -22,8 +23,8 @@ contract Stake {
     }
     mapping (address => uint256) public s_addressToAmountStaked;
     StakeData[] private s_stakers;
-    uint256 public constant MINIMUM_STAKE_TIME = 5 minutes;
-    uint256 public immutable MINIMUM_USD = 1e18;
+    uint256 private constant MINIMUM_STAKE_TIME = 5 minutes;
+    uint256 private constant MINIMUM_USD = 1e18;
 
     function stakeFunds() public payable{
         // require(msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD, "You must stake above $1 worth of ETH");
@@ -68,7 +69,9 @@ contract Stake {
                 s_stakers.pop();
 
                 (bool callSuccess,) = payable(msg.sender).call{value: totalAmount}("");
-                 require(callSuccess, "Call failed");
+                  if(!callSuccess){
+                    revert callFailed();
+                 }
                  break;
             }
         }
@@ -78,6 +81,14 @@ contract Stake {
     }  
     function getAddressToAmountStaked(address stakerAddress) external view returns(uint256){
         return s_addressToAmountStaked[stakerAddress];
+    }
+
+    function getMinimumUSD() external pure returns(uint256){
+        return MINIMUM_USD;
+    }
+
+     function getMinimumStakeTime() external pure returns(uint256){
+        return MINIMUM_STAKE_TIME;
     }
 
    
