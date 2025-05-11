@@ -26,11 +26,12 @@ A simple staking smart contract built with Solidity and Foundry. This contract a
 
 ```bash
 .
-├── contracts/
+├── src/
 │   ├── Stake.sol                # Main staking contract
 │   └── PriceConverter.sol       # Library for price conversion
 ├── script/
-│   └── Deploy.s.sol             # Deployment script
+│   ├── Deploy.s.sol             # Deployment script
+│   └── HelperConfig.s.sol
 ├── test/
 │   └── Stake.t.sol              # Unit and integration tests
 └── foundry.toml                 # Foundry config
